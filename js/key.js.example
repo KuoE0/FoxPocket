@@ -1,0 +1,7 @@
+
+/*
+	1. Get your consumer key in following link: http://getpocket.com/developer/apps/new.
+	2. Rename this file to key.js.
+	3. Now, it can work.
+ */
+const gCONSUMER_KEY = "your consumer key from Pocket";
