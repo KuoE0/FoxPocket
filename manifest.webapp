@@ -14,7 +14,11 @@
     "url": "http://kuoe0.tw"
   },
   "type": "privileged",
-  "permissions": {},
+  "permissions": {
+	  "systemXHR": {
+		  "description": "Required to load remote content"
+	  }
+  },
   "installs_allowed_from": [
     "*"
   ],
