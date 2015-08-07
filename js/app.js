@@ -7,8 +7,10 @@ function debug(str) {
 
 var Pocket = {
 
-	REDIRECT_URI: "app://772bb765-bb36-4242-b179-55688b5df274/manifest.webapp",
+	_ACCESS_TOKEN: undefined,
+	REDIRECT_URI: "https://getpocket.com/auth/success.html",
 
+	// this.CONSUMER_KEY
 	get CONSUMER_KEY() {
 		if (this._CONSUMER_KEY === undefined) {
 			this._CONSUMER_KEY = gCONSUMER_KEY;
@@ -17,8 +19,25 @@ var Pocket = {
 		return this._CONSUMER_KEY;
 	},
 
+	// this.ACCESS_TOKEN = token
+	set ACCESS_TOKEN(token) {
+		debug("Set ACCESS_TOKEN to " + token);
+		this._ACCESS_TOKEN = token;
+	},
+
+	// this.ACCESS_TOKEN
+	get ACCESS_TOKEN() {
+		if (this._ACCESS_TOKEN === undefined) {
+
+		}
+		debug("ACCESS_TOKEN: " + this._ACCESS_TOKEN);
+		return this._ACCESS_TOKEN;
+	},
+
+	// start authenticate from Pocket
 	authenticate: function(callback) {
 		debug("start authenticating...");
+		// get request token to open authentication page
 		this._post(
 			"https://getpocket.com/v3/oauth/request",
 			JSON.stringify({
@@ -26,11 +45,64 @@ var Pocket = {
 				redirect_uri: this.REDIRECT_URI
 			}),
 			response => {
-				this._storeAccessToken(response.code, callback);
+				this._openAuthenticationPage(response.code, callback);
+			}
+		);
+	},
+	// open Pocket authentication page to continue authenticating
+	_openAuthenticationPage: function(requestToken, callback) {
+		debug("open authentication page...");
+		debug("request token: " + requestToken);
+		var authUrl = [
+			"https://getpocket.com/auth/authorize?request_token=",
+			requestToken,
+			"&redirect_uri=",
+			this.REDIRECT_URI
+		].join("");
+		debug("auth url: " + authUrl);
+
+		// open authentication page in an iframe
+		var authWin = document.createElement('iframe');
+		authWin.setAttribute('src', authUrl);
+		authWin.setAttribute('mozbrowser', true);
+		authWin.setAttribute('mozallowfullscreen', true);
+		authWin.setAttribute('remote', true);
+
+		// listen the locationchange event to check the authentication state
+		authWin.addEventListener('mozbrowserlocationchange', evt => {
+			var current_uri = evt.detail;
+			debug("Current URI: " + current_uri);
+			debug("Target URI:  " + this.REDIRECT_URI);
+			if (current_uri == this.REDIRECT_URI) {
+				debug("OAuth Succeed!");
+				// request the access token
+				this._getAccessToken(requestToken, callback);
+				document.body.removeChild(authWin);
+			}
+		});
+
+		document.body.appendChild(authWin);
+	},
+
+	_getAccessToken: function(requestToken, callback) {
+		debug("request access token...");
+		this._post(
+			"https://getpocket.com/v3/oauth/authorize",
+			JSON.stringify({
+				consumer_key: this.CONSUMER_KEY,
+				code: requestToken
+			}),
+			response => {
+				debug("Access Token: " + response.access_token);
+				this.ACCESS_TOKEN = response.access_token;
+				if (callback) {
+					callback();
+				}
 			}
 		);
 	},
 
+	// post method to fetch data
 	_post: function(url, data, callback) {
 		debug("_post");
 		var request = new XMLHttpRequest({
@@ -39,7 +111,6 @@ var Pocket = {
 
 		debug(data);
 		request.addEventListener("load", evt => {
-
 			debug("request status: " + request.status);
 			if (request.status === 200 && callback) {
 				var response = JSON.parse(request.responseText);
@@ -52,11 +123,6 @@ var Pocket = {
 		request.setRequestHeader("Content-type", "application/json; charset=UTF8");
 		request.setRequestHeader("X-Accept", "application/json");
 		request.send(data || null);
-	},
-
-	_storeAccessToken: function(accessToken, callback) {
-		debug("get access token...");
-		debug("access token: " + accessToken);
 	}
 
 };
@@ -66,6 +132,6 @@ var Pocket = {
 // That makes the app more responsive and perceived as faster.
 // https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
 window.addEventListener('DOMContentLoaded', function() {
-	document.getElementById('btn-auth').addEventListener('click', Pocket.authenticate.bind(Pocket));
+	document.getElementById('btn-auth').addEventListener('click', Pocket.authenticate.bind(Pocket, null));
 });
 
