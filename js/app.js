@@ -123,6 +123,22 @@ var Pocket = {
 		request.setRequestHeader("Content-type", "application/json; charset=UTF8");
 		request.setRequestHeader("X-Accept", "application/json");
 		request.send(data || null);
+	},
+
+	retrieve: function(count) {
+		this._post(
+			"https://getpocket.com/v3/get",
+			JSON.stringify({
+				consumer_key: this.CONSUMER_KEY,
+				access_token: this.ACCESS_TOKEN,
+				count: count,
+				detailType: 'simple'
+			}),
+			response => {
+				debug(JSON.stringify(response));
+			}
+		);
+
 	}
 
 };
@@ -133,5 +149,6 @@ var Pocket = {
 // https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
 window.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('btn-auth').addEventListener('click', Pocket.authenticate.bind(Pocket, null));
+	document.getElementById('btn-get').addEventListener('click', Pocket.retrieve.bind(Pocket, 10));
 });
 
