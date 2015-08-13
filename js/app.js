@@ -9,6 +9,7 @@ var Pocket = {
 
 	_ACCESS_TOKEN: undefined,
 	REDIRECT_URI: "https://getpocket.com/auth/success.html",
+	POCKET_URI: "https://getpocket.com/a/",
 
 	// this.CONSUMER_KEY
 	get CONSUMER_KEY() {
@@ -45,6 +46,7 @@ var Pocket = {
 				redirect_uri: this.REDIRECT_URI
 			}),
 			response => {
+				debug("Request Token: " + response.code);
 				this._openAuthenticationPage(response.code, callback);
 			}
 		);
@@ -59,7 +61,7 @@ var Pocket = {
 			"&redirect_uri=",
 			this.REDIRECT_URI
 		].join("");
-		debug("auth url: " + authUrl);
+		debug("Auth URI: " + authUrl);
 
 		// open authentication page in an iframe
 		var authWin = document.createElement('iframe');
@@ -70,18 +72,26 @@ var Pocket = {
 
 		// listen the locationchange event to check the authentication state
 		authWin.addEventListener('mozbrowserlocationchange', evt => {
-			var current_uri = evt.detail;
-			debug("Current URI: " + current_uri);
-			debug("Target URI:  " + this.REDIRECT_URI);
-			if (current_uri == this.REDIRECT_URI) {
+			var url = new URL(evt.detail);
+			debug("Location Changed: " + url.href);
+			debug(url.protocol + '//' + url.host + url.pathname);
+
+			if (url.protocol + '//' + url.host + url.pathname == "https://getpocket.com/a/") {
+				debug("OAuth Succeed!");
+				document.body.removeChild(authWin);
+				this._openAuthenticationPage(requestToken, callback);
+			}
+			else if (url.href == this.REDIRECT_URI) {
 				debug("OAuth Succeed!");
 				// request the access token
 				this._getAccessToken(requestToken, callback);
 				document.body.removeChild(authWin);
 			}
+
 		});
 
 		document.body.appendChild(authWin);
+
 	},
 
 	_getAccessToken: function(requestToken, callback) {
@@ -111,7 +121,7 @@ var Pocket = {
 
 		debug(data);
 		request.addEventListener("load", evt => {
-			debug("request status: " + request.status);
+			debug("Request Status: " + request.status);
 			if (request.status === 200 && callback) {
 				var response = JSON.parse(request.responseText);
 				callback(response);
@@ -139,7 +149,7 @@ var Pocket = {
 			}
 		);
 
-	}
+	},
 
 };
 
