@@ -5,7 +5,7 @@ function debug(str) {
 	console.log("-*- FoxPocket -*- " + str);
 }
 
-var Pocket = {
+var FoxPocket = {
 
 	_ACCESS_TOKEN: undefined,
 	REDIRECT_URI: "https://getpocket.com/auth/success.html",
@@ -34,6 +34,10 @@ var Pocket = {
 		debug("ACCESS_TOKEN: " + this._ACCESS_TOKEN);
 		return this._ACCESS_TOKEN;
 	},
+
+  init: function fp_init() {
+
+  },
 
 	// start authenticate from Pocket
 	authenticate: function(callback) {
@@ -158,7 +162,8 @@ var Pocket = {
 // That makes the app more responsive and perceived as faster.
 // https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
 window.addEventListener('DOMContentLoaded', function() {
-	document.getElementById('btn-auth').addEventListener('click', Pocket.authenticate.bind(Pocket, null));
-	document.getElementById('btn-get').addEventListener('click', Pocket.retrieve.bind(Pocket, 10));
+	document.getElementById('btn-auth').addEventListener('click', FoxPocket.authenticate.bind(FoxPocket, null));
+	document.getElementById('btn-get').addEventListener('click', FoxPocket.retrieve.bind(FoxPocket, 10));
 });
 
+FoxPocket.init();
