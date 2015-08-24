@@ -73,6 +73,7 @@ var FoxPocket = {
 		authWin.setAttribute('mozbrowser', true);
 		authWin.setAttribute('mozallowfullscreen', true);
 		authWin.setAttribute('remote', true);
+    authWin.setAttribute('class', 'fullscreen');
 
 		// listen the locationchange event to check the authentication state
 		authWin.addEventListener('mozbrowserlocationchange', evt => {

@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>FoxPocket</title>
-        <meta name="description" content="Pocket client on Firefox OS">
+  <head>
+    <meta charset="utf-8">
+    <title>FoxPocket</title>
+    <meta name="description" content="Pocket client on Firefox OS">
 
-        <meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" href="css/app.css">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="css/app.css">
 
-        <script type="text/javascript" src="js/key.js" defer></script>
-        <script type="text/javascript" src="js/app.js" defer></script>
+    <script type="text/javascript" src="js/key.js" defer></script>
+    <script type="text/javascript" src="js/app.js" defer></script>
 
-        <link rel="prefetch" type="application/l10n" href="data/locales.ini" />
-        <script type="text/javascript" src="js/libs/l10n.js" defer></script>
-    </head>
-    <body>
-        <section>
-            <h1 data-l10n-id="app_title">FoxPocket</h1>
-            <p data-l10n-id="app_description">Pocket client on Firefox OS.</p>
-				<button id="btn-auth">Auth from Pocket</button>
-				<button id="btn-get">Get from Pocket</button>
-        </section>
-    </body>
+    <link rel="prefetch" type="application/l10n" href="data/locales.ini" />
+    <script type="text/javascript" src="js/libs/l10n.js" defer></script>
+  </head>
+  <body>
+    <section>
+      <h1 data-l10n-id="app_title">FoxPocket</h1>
+      <p data-l10n-id="app_description">Pocket client on Firefox OS.</p>
+      <div>
+        <button id="btn-auth">Auth from Pocket</button>
+        <button id="btn-get">Get from Pocket</button>
+        <button id="btn-fxa">FxA auth</button>
+      </div>
+      <div>
+        <ul id="reading-list">
+        </ul>
+      </div>
+    </section>
+  </body>
 </html>
