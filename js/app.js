@@ -151,6 +151,18 @@ var FoxPocket = {
 			}),
 			response => {
 				debug(JSON.stringify(response));
+
+        var list = response.list;
+        var readingList = document.getElementById('reading-list');
+
+        Object.keys(list).map(key => {
+          var item = list[key];
+          var elem = document.createElement('a');
+          elem.href = item.resolved_url;
+          elem.textContent = item.resolved_title;
+          elem.className = "list-group-item";
+          readingList.appendChild(elem);
+        });
 			}
 		);
 
@@ -163,8 +175,8 @@ var FoxPocket = {
 // That makes the app more responsive and perceived as faster.
 // https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
 window.addEventListener('DOMContentLoaded', function() {
-	document.getElementById('btn-auth').addEventListener('click', FoxPocket.authenticate.bind(FoxPocket, null));
-	document.getElementById('btn-get').addEventListener('click', FoxPocket.retrieve.bind(FoxPocket, 10));
+	document.getElementById('btn-auth').addEventListener('click', FoxPocket.authenticate.bind(FoxPocket, FoxPocket.retrieve.bind(FoxPocket, 100)));
 });
 
 FoxPocket.init();
+
