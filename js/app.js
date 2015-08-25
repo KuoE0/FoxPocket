@@ -175,7 +175,7 @@ var FoxPocket = {
 // That makes the app more responsive and perceived as faster.
 // https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
 window.addEventListener('DOMContentLoaded', function() {
-	document.getElementById('btn-auth').addEventListener('click', FoxPocket.authenticate.bind(FoxPocket, FoxPocket.retrieve.bind(FoxPocket, 100)));
+	document.getElementById('btn-login').addEventListener('click', FoxPocket.authenticate.bind(FoxPocket, FoxPocket.retrieve.bind(FoxPocket, 100)));
 });
 
 FoxPocket.init();
