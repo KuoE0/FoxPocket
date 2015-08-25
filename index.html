@@ -7,6 +7,11 @@
 
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="css/app.css">
+    <!-- jQuery -->
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
 
     <script type="text/javascript" src="js/key.js" defer></script>
     <script type="text/javascript" src="js/app.js" defer></script>
@@ -15,18 +20,20 @@
     <script type="text/javascript" src="js/libs/l10n.js" defer></script>
   </head>
   <body>
-    <section>
-      <h1 data-l10n-id="app_title">FoxPocket</h1>
-      <p data-l10n-id="app_description">Pocket client on Firefox OS.</p>
-      <div>
-        <button id="btn-auth">Auth from Pocket</button>
-        <button id="btn-get">Get from Pocket</button>
-        <button id="btn-fxa">FxA auth</button>
+    <nav class="navbar navbar-inverse">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">FoxPocket</a>
       </div>
+      <div class="container-fluid">
+      </div>
+    </nav>
+    <div class="container">
+      <button id="btn-auth" class="btn btn-default">Auth from Pocket</button>
+      <button id="btn-get" class="btn btn-default">Get from Pocket</button>
       <div>
         <ul id="reading-list">
         </ul>
       </div>
-    </section>
+    </div>
   </body>
 </html>
