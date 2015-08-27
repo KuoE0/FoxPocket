@@ -25,7 +25,8 @@ p {
 }
 
 .navbar {
-  background-color: #F28322
+  background-color: #F28322;
+  margin-bottom: 0 !important;
 }
 
 .navbar-header a {
