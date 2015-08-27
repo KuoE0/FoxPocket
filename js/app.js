@@ -39,6 +39,10 @@ var FoxPocket = {
 
   },
 
+  _isLogin() {
+    return this._ACCESS_TOKEN == undefined ? false : true;
+  },
+
 	// start authenticate from Pocket
 	authenticate: function(callback) {
 		debug("start authenticating...");
@@ -174,9 +178,9 @@ var FoxPocket = {
 // but without waiting for other external resources to load (css/images/etc)
 // That makes the app more responsive and perceived as faster.
 // https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
-window.addEventListener('DOMContentLoaded', function() {
+$(function() {
+  FoxPocket.init();
 	document.getElementById('btn-login').addEventListener('click', FoxPocket.authenticate.bind(FoxPocket, FoxPocket.retrieve.bind(FoxPocket, 100)));
 });
 
-FoxPocket.init();
 
