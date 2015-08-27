@@ -24,9 +24,12 @@ p {
   top: 0;
 }
 
+#navbar {
+  margin-bottom: 0;
+}
+
 .navbar {
   background-color: #F28322;
-  margin-bottom: 0 !important;
 }
 
 .navbar-header a {
