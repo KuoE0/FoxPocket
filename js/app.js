@@ -36,7 +36,6 @@ var FoxPocket = {
 	},
 
   init: function fp_init() {
-
   },
 
   _isLogin() {
@@ -99,7 +98,7 @@ var FoxPocket = {
 
 		});
 
-		document.body.appendChild(authWin);
+    $('body').append(authWin);
 
 	},
 
@@ -155,17 +154,16 @@ var FoxPocket = {
 			}),
 			response => {
 				debug(JSON.stringify(response));
+        var readingList = $('#reading-list');
 
         var list = response.list;
-        var readingList = document.getElementById('reading-list');
-
         Object.keys(list).map(key => {
           var item = list[key];
-          var elem = document.createElement('a');
-          elem.href = item.resolved_url;
-          elem.textContent = item.resolved_title;
-          elem.className = "list-group-item";
-          readingList.appendChild(elem);
+          var elem = $('<a>');
+          elem.attr('href', item.resolved_url);
+          elem.html(item.resolved_title);
+          elem.addClass('list-group-item');
+          readingList.append(elem);
         });
 			}
 		);
@@ -180,7 +178,7 @@ var FoxPocket = {
 // https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
 $(function() {
   FoxPocket.init();
-	document.getElementById('btn-login').addEventListener('click', FoxPocket.authenticate.bind(FoxPocket, FoxPocket.retrieve.bind(FoxPocket, 100)));
+  $('#btn-login').click(FoxPocket.authenticate.bind(FoxPocket, FoxPocket.retrieve.bind(FoxPocket, 100)));
 });
 
 
