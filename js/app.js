@@ -24,6 +24,8 @@ var FoxPocket = {
 	set ACCESS_TOKEN(token) {
 		debug("Set ACCESS_TOKEN to " + token);
 		this._ACCESS_TOKEN = token;
+    $('#btn-login').removeClass('glyphicon-log-in');
+    $('#btn-login span').addClass('glyphicon-log-out');
 	},
 
 	// this.ACCESS_TOKEN
@@ -36,6 +38,8 @@ var FoxPocket = {
 	},
 
   init: function fp_init() {
+    self = FoxPocket;
+    $('#btn-login').click(self.authenticate.bind(self, FoxPocket.retrieve.bind(self, 100)));
   },
 
   _isLogin() {
@@ -178,7 +182,6 @@ var FoxPocket = {
 // https://developer.mozilla.org/Web/Reference/Events/DOMContentLoaded
 $(function() {
   FoxPocket.init();
-  $('#btn-login').click(FoxPocket.authenticate.bind(FoxPocket, FoxPocket.retrieve.bind(FoxPocket, 100)));
 });
 
 
