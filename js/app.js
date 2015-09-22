@@ -52,6 +52,7 @@ var FoxPocket = {
 
   init: function fp_init() {
     self = FoxPocket;
+    $('#btn-refresh').click(self.refresh.bind(self));
     if (self._isLogin()) {
       $('#btn-login span').addClass('glyphicon-log-out');
       $('#btn-login').click(self.logout.bind(self));
@@ -67,10 +68,19 @@ var FoxPocket = {
     return this.ACCESS_TOKEN === undefined ? false : true;
   },
 
+  _clearReadingList: function() {
+    $('#reading-list').empty();
+  },
+
   logout: function() {
     this.ACCESS_TOKEN = undefined;
-    $('#reading-list').empty();
+    this._clearReadingList();
     $('#btn-login').click(self.authenticate.bind(self, self.retrieve.bind(self, 100)));
+  },
+
+  refresh: function() {
+    this._clearReadingList();
+    this.retrieve(100);
   },
 
 	// start authenticate from Pocket
