@@ -24,9 +24,16 @@ var FoxPocket = {
 	set ACCESS_TOKEN(token) {
 		debug("Set ACCESS_TOKEN to " + token);
 		this._ACCESS_TOKEN = token;
-    localStorage.setItem('access_token', token);
-    $('#btn-login').removeClass('glyphicon-log-in');
-    $('#btn-login span').addClass('glyphicon-log-out');
+    if (token != undefined) {
+      localStorage.setItem('access_token', token);
+      $('#btn-login span').removeClass('glyphicon-log-in');
+      $('#btn-login span').addClass('glyphicon-log-out');
+    }
+    else {
+      localStorage.removeItem('access_token');
+      $('#btn-login span').removeClass('glyphicon-log-out');
+      $('#btn-login span').addClass('glyphicon-log-in');
+    }
 	},
 
 	// this.ACCESS_TOKEN
@@ -47,6 +54,7 @@ var FoxPocket = {
     self = FoxPocket;
     if (self._isLogin()) {
       $('#btn-login span').addClass('glyphicon-log-out');
+      $('#btn-login').click(self.logout.bind(self));
       self.retrieve.call(self, 100);
     }
     else {
@@ -59,9 +67,16 @@ var FoxPocket = {
     return this.ACCESS_TOKEN === undefined ? false : true;
   },
 
+  logout: function() {
+    this.ACCESS_TOKEN = undefined;
+    $('#reading-list').empty();
+    $('#btn-login').click(self.authenticate.bind(self, self.retrieve.bind(self, 100)));
+  },
+
 	// start authenticate from Pocket
 	authenticate: function(callback) {
 		debug("start authenticating...");
+    $('#btn-login').click(self.logout.bind(self));
 		// get request token to open authentication page
 		this._post(
 			"https://getpocket.com/v3/oauth/request",
