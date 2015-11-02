@@ -8,7 +8,7 @@ function debug(str) {
 var FoxPocket = {
 
 	_ACCESS_TOKEN: undefined,
-	REDIRECT_URI: "https://getpocket.com/auth/success.html",
+	REDIRECT_URI: "https://localhost/",
 	POCKET_URI: "https://getpocket.com/a/",
 
 	// this.CONSUMER_KEY
@@ -64,7 +64,7 @@ var FoxPocket = {
     }
   },
 
-  _isLogin() {
+  _isLogin: function() {
     return this.ACCESS_TOKEN === undefined ? false : true;
   },
 
@@ -134,11 +134,14 @@ var FoxPocket = {
 				// request the access token
 				this._getAccessToken(requestToken, callback);
 				document.body.removeChild(authWin);
+        $('#navbar').addClass('navbar-fixed-top');
 			}
 
 		});
 
     $('body').append(authWin);
+    // hide navbar when authentication
+    $('#navbar').removeClass('navbar-fixed-top');
 
 	},
 
