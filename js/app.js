@@ -2,28 +2,28 @@
 'use strict';
 
 function debug(str) {
-	console.log("-*- FoxPocket -*- " + str);
+  console.log("-*- FoxPocket -*- " + str);
 }
 
 var FoxPocket = {
 
-	_ACCESS_TOKEN: undefined,
-	REDIRECT_URI: "https://localhost/",
-	POCKET_URI: "https://getpocket.com/a/",
+  _ACCESS_TOKEN: undefined,
+  REDIRECT_URI: "https://localhost/",
+  POCKET_URI: "https://getpocket.com/a/",
 
-	// this.CONSUMER_KEY
-	get CONSUMER_KEY() {
-		if (this._CONSUMER_KEY === undefined) {
-			this._CONSUMER_KEY = gCONSUMER_KEY;
-		}
-		debug("CONSUMER_KEY: " + this._CONSUMER_KEY);
-		return this._CONSUMER_KEY;
-	},
+  // this.CONSUMER_KEY
+  get CONSUMER_KEY() {
+    if (this._CONSUMER_KEY === undefined) {
+      this._CONSUMER_KEY = gCONSUMER_KEY;
+    }
+    debug("CONSUMER_KEY: " + this._CONSUMER_KEY);
+    return this._CONSUMER_KEY;
+  },
 
-	// this.ACCESS_TOKEN = token
-	set ACCESS_TOKEN(token) {
-		debug("Set ACCESS_TOKEN to " + token);
-		this._ACCESS_TOKEN = token;
+  // this.ACCESS_TOKEN = token
+  set ACCESS_TOKEN(token) {
+    debug("Set ACCESS_TOKEN to " + token);
+    this._ACCESS_TOKEN = token;
     if (token != undefined) {
       localStorage.setItem('access_token', token);
       $('#btn-login span').removeClass('glyphicon-log-in');
@@ -34,21 +34,21 @@ var FoxPocket = {
       $('#btn-login span').removeClass('glyphicon-log-out');
       $('#btn-login span').addClass('glyphicon-log-in');
     }
-	},
+  },
 
-	// this.ACCESS_TOKEN
-	get ACCESS_TOKEN() {
-		if (this._ACCESS_TOKEN === undefined) {
+  // this.ACCESS_TOKEN
+  get ACCESS_TOKEN() {
+    if (this._ACCESS_TOKEN === undefined) {
       var token = localStorage.getItem('access_token');
       if (token == null) {
         debug('ACCESS_TOKEN not found.');
         return undefined;
       }
       this._ACCESS_TOKEN = token;
-		}
-		debug("ACCESS_TOKEN: " + this._ACCESS_TOKEN);
-		return this._ACCESS_TOKEN;
-	},
+    }
+    debug("ACCESS_TOKEN: " + this._ACCESS_TOKEN);
+    return this._ACCESS_TOKEN;
+  },
 
   init: function fp_init() {
     self = FoxPocket;
@@ -83,121 +83,119 @@ var FoxPocket = {
     this.retrieve(100);
   },
 
-	// start authenticate from Pocket
-	authenticate: function(callback) {
-		debug("start authenticating...");
+  // start authenticate from Pocket
+  authenticate: function(callback) {
+    debug("start authenticating...");
     $('#btn-login').click(self.logout.bind(self));
-		// get request token to open authentication page
-		this._post(
-			"https://getpocket.com/v3/oauth/request",
-			JSON.stringify({
-				consumer_key: this.CONSUMER_KEY,
-				redirect_uri: this.REDIRECT_URI
-			}),
-			response => {
-				debug("Request Token: " + response.code);
-				this._openAuthenticationPage(response.code, callback);
-			}
-		);
-	},
-	// open Pocket authentication page to continue authenticating
-	_openAuthenticationPage: function(requestToken, callback) {
-		debug("open authentication page...");
-		debug("request token: " + requestToken);
-		var authUrl = [
-			"https://getpocket.com/auth/authorize?request_token=",
-			requestToken,
-			"&redirect_uri=",
-			this.REDIRECT_URI
-		].join("");
-		debug("Auth URI: " + authUrl);
+    // get request token to open authentication page
+    this._post(
+      "https://getpocket.com/v3/oauth/request",
+      JSON.stringify({
+        consumer_key: this.CONSUMER_KEY,
+        redirect_uri: this.REDIRECT_URI
+      }),
+      response => {
+        debug("Request Token: " + response.code);
+        this._openAuthenticationPage(response.code, callback);
+    });
+  },
+  // open Pocket authentication page to continue authenticating
+  _openAuthenticationPage: function(requestToken, callback) {
+    debug("open authentication page...");
+    debug("request token: " + requestToken);
+    var authUrl = [
+      "https://getpocket.com/auth/authorize?request_token=",
+      requestToken,
+      "&redirect_uri=",
+      this.REDIRECT_URI
+    ].join("");
+    debug("Auth URI: " + authUrl);
 
-		// open authentication page in an iframe
-		var authWin = document.createElement('iframe');
-		authWin.setAttribute('src', authUrl);
-		authWin.setAttribute('mozbrowser', true);
+    // open authentication page in an iframe
+    var authWin = document.createElement('iframe');
+    authWin.setAttribute('src', authUrl);
+    authWin.setAttribute('mozbrowser', true);
     authWin.setAttribute('class', 'fullscreen');
 
-		// listen the locationchange event to check the authentication state
-		authWin.addEventListener('mozbrowserlocationchange', evt => {
-			var url = new URL(evt.detail);
-			debug("Location Changed: " + url.href);
-			debug(url.protocol + '//' + url.host + url.pathname);
+    // listen the locationchange event to check the authentication state
+    authWin.addEventListener('mozbrowserlocationchange', evt => {
+      var url = new URL(evt.detail);
+      debug("Location Changed: " + url.href);
+      debug(url.protocol + '//' + url.host + url.pathname);
 
-			if (url.protocol + '//' + url.host + url.pathname == "https://getpocket.com/a/") {
-				debug("OAuth Succeed!");
-				document.body.removeChild(authWin);
-				this._openAuthenticationPage(requestToken, callback);
-			}
-			else if (url.href == this.REDIRECT_URI) {
-				debug("OAuth Succeed!");
-				// request the access token
-				this._getAccessToken(requestToken, callback);
-				document.body.removeChild(authWin);
+      if (url.protocol + '//' + url.host + url.pathname == "https://getpocket.com/a/") {
+        debug("OAuth Succeed!");
+        document.body.removeChild(authWin);
+        this._openAuthenticationPage(requestToken, callback);
+      }
+      else if (url.href == this.REDIRECT_URI) {
+        debug("OAuth Succeed!");
+        // request the access token
+        this._getAccessToken(requestToken, callback);
+        document.body.removeChild(authWin);
         $('#navbar').addClass('navbar-fixed-top');
-			}
+      }
 
-		});
+    });
 
     $('body').append(authWin);
     // hide navbar when authentication
     $('#navbar').removeClass('navbar-fixed-top');
 
-	},
+  },
 
-	_getAccessToken: function(requestToken, callback) {
-		debug("request access token...");
-		this._post(
-			"https://getpocket.com/v3/oauth/authorize",
-			JSON.stringify({
-				consumer_key: this.CONSUMER_KEY,
-				code: requestToken
-			}),
-			response => {
-				debug("Access Token: " + response.access_token);
-				this.ACCESS_TOKEN = response.access_token;
-				if (callback) {
-					callback();
-				}
-			}
-		);
-	},
+  _getAccessToken: function(requestToken, callback) {
+    debug("request access token...");
+    this._post(
+      "https://getpocket.com/v3/oauth/authorize",
+      JSON.stringify({
+        consumer_key: this.CONSUMER_KEY,
+        code: requestToken
+      }),
+      response => {
+        debug("Access Token: " + response.access_token);
+        this.ACCESS_TOKEN = response.access_token;
+        if (callback) {
+          callback();
+        }
+    });
+  },
 
-	// post method to fetch data
-	_post: function(url, data, callback) {
-		debug("_post");
-		var request = new XMLHttpRequest({
-			mozSystem: true
-		});
+  // post method to fetch data
+  _post: function(url, data, callback) {
+    debug("_post");
+    var request = new XMLHttpRequest({
+      mozSystem: true
+    });
 
-		debug(data);
-		request.addEventListener("load", evt => {
-			debug("Request Status: " + request.status);
-			if (request.status === 200 && callback) {
-				var response = JSON.parse(request.responseText);
-				callback(response);
-			}
+    debug(data);
+    request.addEventListener("load", evt => {
+      debug("Request Status: " + request.status);
+      if (request.status === 200 && callback) {
+        var response = JSON.parse(request.responseText);
+        callback(response);
+      }
 
-		}, false);
+    }, false);
 
-		request.open("POST", url);
-		request.setRequestHeader("Content-type", "application/json; charset=UTF8");
-		request.setRequestHeader("X-Accept", "application/json");
-		request.send(data || null);
-	},
+    request.open("POST", url);
+    request.setRequestHeader("Content-type", "application/json; charset=UTF8");
+    request.setRequestHeader("X-Accept", "application/json");
+    request.send(data || null);
+  },
 
-	retrieve: function(count) {
+  retrieve: function(count) {
     debug('retrieve items...');
-		this._post(
-			"https://getpocket.com/v3/get",
-			JSON.stringify({
-				consumer_key: this.CONSUMER_KEY,
-				access_token: this.ACCESS_TOKEN,
-				count: count,
-				detailType: 'simple'
-			}),
-			response => {
-				debug(JSON.stringify(response));
+    this._post(
+      "https://getpocket.com/v3/get",
+      JSON.stringify({
+        consumer_key: this.CONSUMER_KEY,
+        access_token: this.ACCESS_TOKEN,
+        count: count,
+        detailType: 'simple'
+      }),
+      response => {
+        debug(JSON.stringify(response));
         var readingList = $('#reading-list');
 
         var list = response.list;
@@ -209,10 +207,8 @@ var FoxPocket = {
           elem.addClass('list-group-item');
           readingList.append(elem);
         });
-			}
-		);
-
-	},
+    });
+  },
 
 };
 
